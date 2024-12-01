@@ -57,7 +57,6 @@ class Terminal:
         self.text_area.see(tk.END)
         
     def close_shell(self):
-        
         exit_result = self.remote_shell.send_command("exit")
         self.popup.destroy()
         
