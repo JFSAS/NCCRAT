@@ -33,7 +33,7 @@ class ratGUI:
         
         # 帮助菜单
         help_menu = Menu(menu_bar, tearoff=0)
-        help_menu.add_command(label="关于", command=lambda: messagebox.showinfo("关于", "这是一个RAT管理工具的GUI界面。"))
+        help_menu.add_command(label="关于", command=lambda: messagebox.showinfo("关于NCCRAT", "这是一个RAT管理工具的GUI界面。"))
         menu_bar.add_cascade(label="帮助(H)", menu=help_menu)
         
 
