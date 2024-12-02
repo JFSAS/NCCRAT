@@ -1,2 +1,4 @@
 /__pycache__
 /.vscode
+/server/__pycache__
+/client/__pycache__
