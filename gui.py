@@ -30,6 +30,13 @@ class ratGUI:
         file_menu = Menu(menu_bar, tearoff=0)
         file_menu.add_command(label="退出", command=self.root.quit)
         menu_bar.add_cascade(label="菜单(F)", menu=file_menu)
+        
+        # 帮助菜单
+        help_menu = Menu(menu_bar, tearoff=0)
+        help_menu.add_command(label="关于", command=lambda: messagebox.showinfo("关于", "这是一个RAT管理工具的GUI界面。"))
+        menu_bar.add_cascade(label="帮助(H)", menu=help_menu)
+        
+
 
     def create_toolbar(self):
         toolbar = tk.Frame(self.root, bd=1, relief=tk.RAISED)
