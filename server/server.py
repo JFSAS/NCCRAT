@@ -1,6 +1,6 @@
 import socket
 import threading
-from Terminal import Terminal
+from modules.terminal import Terminal
 from queue import Queue
 import threading
 class RAT_SERVER:

