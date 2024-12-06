@@ -2,7 +2,12 @@ import socket
 from tkinter import * 
 import tkinter as tk
 from queue import Queue
-class Terminal:
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+class Terminal: 
+    '''
+    开启一个终端窗口
+    '''
     def __init__(self, master, client: socket.socket, send_buf: Queue, recv_buf: Queue):
         self.master = master
         self.client = client
@@ -11,6 +16,9 @@ class Terminal:
         self.create_terminal()
     
     def create_terminal(self):
+        '''
+        开启gui终端
+        '''
         self.popup = Toplevel(self.master)
         self.popup.title(f"Terminal - {self.ip}")
         self.popup.geometry("800x600")
@@ -69,11 +77,13 @@ class RemoteShell:
         self.recv_buf = recv_buf
     def send_command(self, command):
         command = '1' + command
-        self.send_buf.put(command)
+        logging.debug(f"shell send: {command}")
+        self.send_buf.put(command.encode())
         if command == '1exit':
             return 'exit'
         
         while True:
-            if self.recv_buf.empty() is False and self.recv_buf.queue[0][0] == '1':
-                result = self.recv_buf.get()
+            if self.recv_buf.empty() is False and self.recv_buf.queue[0][:1] == b'1':
+                result = self.recv_buf.get()[1:].decode()
+                logging.debug(f"shell recv: {result}")
                 return result
