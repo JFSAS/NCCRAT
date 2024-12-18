@@ -118,13 +118,7 @@ class RAT_CLIENT:
                 
         
                     
-                
         
-    
-        
-
-                    
-                 
             
             
     

