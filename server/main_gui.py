@@ -165,7 +165,7 @@ class ratGUI:
             self.log_message(f"主机{ip}已连接")
             # logging.debug(f"Successfully inserted client with IP: {ip}")
         except Exception as e:
-            # logging.error(f"Error inserting into tree: {e}")
+            logging.error(f"Error inserting into tree: {e}")
     
     
     def remove_client(self):
