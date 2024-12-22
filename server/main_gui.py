@@ -25,7 +25,7 @@ class ratGUI:
         self.server.root = self.root
         self.server.on_client_connected = self.add_client_to_table
         self.server.on_client_disconnected = self.remove_client_from_table
-        self.root.title("RAT")
+        self.root.title("NCCRAT SERVER")
         self.current_client = None
         self.create_menu()
         self.create_toolbar()
