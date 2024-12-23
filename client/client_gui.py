@@ -20,6 +20,7 @@ class ClientGUI(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.check_request_queue)
         self.timer.start(500)  # 每秒检查一次队列
+        self.rat = RAT_CLIENT()
     
     def init_ui(self):
         self.setWindowTitle("NCCRAT CLIENT")
@@ -52,12 +53,12 @@ class ClientGUI(QWidget):
         port = int(self.port_input.text())
         
         try:
-            self.rat = RAT_CLIENT(host, port)
+            self.rat.bind(host, port)
             self.rat.build_connection()
             threading.Thread(target=self.rat.excute).start()
             QMessageBox.information(self, "Success!", f"Connected to {host}:{port}!")
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to connect to {host}:{port}: {e}")
+            QMessageBox.information(self, "Error", f"Failed to connect to {host}:{port}: {e}")
             
     def show_permission_dialog(self):
         msg_box = QMessageBox()

