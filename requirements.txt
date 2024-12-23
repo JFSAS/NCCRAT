@@ -1,1 +1,4 @@
 psutil
+pynput
+pyqt6
+
