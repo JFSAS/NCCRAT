@@ -49,6 +49,7 @@ client.py
 
 - Python 3.x
 - 必要的第三方库，可在 `requirements.txt` 中查看。
+- 由于macOS的安全限制和一些环境问题，客户端和保护程序暂时只适配了Windows，服务端可以适配macOS和Windows。
 
 ### 运行方法
 
