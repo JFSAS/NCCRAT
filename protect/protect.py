@@ -131,6 +131,7 @@ class Protect:
         return connections
 
     def stop_selected_tcp(self, tree):
+        
         for i in range(tree.topLevelItemCount()):
             item = tree.topLevelItem(i)
             checkbox = tree.itemWidget(item, 0)
@@ -138,25 +139,40 @@ class Protect:
                 # 停止选中的 TCP 连接
                 logging.debug(f"Stopping TCP connection: {item.text(1)}")
                 local_address = item.text(2)
-                local_port = int(item.text(3))
                 remote_address = item.text(4)
-                remote_port = int(item.text(5))
+                local_port = item.text(3)           
+                remote_port =item.text(5)
+                local_na_flag = False
+                remote_na_flag = False
                 
-                for conn in psutil.net_connections(kind='tcp'):
-                    if (conn.laddr.ip == local_address and conn.laddr.port == local_port 
-                        and conn.raddr.ip == remote_address and conn.raddr.port == remote_port ):
-                        os.system(f"taskkill /PID {conn.pid} /F")
-                        logging.debug(
-                            f"Stopped TCP connection: {item.text(1)}")
-                        
-                        # pop-up
-                        msg = QMessageBox()
-                        msg.setIcon(QMessageBox.Icon.Information)
-                        msg.setText(f"Successfully stop: No.{item.text(1)} TCP")
-                        msg.setWindowTitle("success")
-                        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-                        msg.exec()
-                        break
+                if local_address == 'N/A':
+                    local_na_flag = True
+                if remote_address == 'N/A':
+                    remote_na_flag = True
+            
+                for conn in psutil.net_connections(kind='tcp'): # or 短路
+                    if local_na_flag or (conn.laddr.ip == local_address and conn.laddr.port == int(local_port)):
+                        if remote_na_flag or (conn.raddr.ip == remote_address and conn.raddr.port == int(remote_port)):
+                            logging.debug(f"Detected system: {os.name}")
+                            commands = {
+                                "nt": f"taskkill /PID {conn.pid} /F",  # Windows
+                                "posix": f"kill -9 {conn.pid}"  # Unix
+                            }
+                            command = commands.get(os.name, None)
+                            
+                            if command:
+                                os.system(command)
+                                logging.debug(
+                                    f"Stopped TCP connection: {item.text(1)}")
+                            
+                            # pop-up
+                            msg = QMessageBox()
+                            msg.setIcon(QMessageBox.Icon.Information)
+                            msg.setText(f"Successfully stop: No.{item.text(1)} TCP")
+                            msg.setWindowTitle("success")
+                            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                            msg.exec()
+                    
                 
 
     def ignore_selected_tcp(self, tree):

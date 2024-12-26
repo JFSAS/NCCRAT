@@ -28,7 +28,7 @@
 
 * `server.py`：服务器程序，维护了 Socket 的管理、消息收发等逻辑。通常无需修改，除非您需要更改数据传输结构。
 
-- `protect.py`: 保护程序，现有停止tcp功能。
+- `protect.py`: 保护程序，现有tcp管理功能。
 
 ## 通信逻辑 🌐
 
@@ -49,7 +49,8 @@ client.py
 
 - Python 3.x
 - 必要的第三方库，可在 `requirements.txt` 中查看。
-- 由于macOS的安全限制和一些环境问题，客户端和保护程序暂时只适配了Windows，服务端可以适配macOS和Windows。
+- 由于macOS的安全限制和一些环境问题，客户端暂时只适配了Windows，服务端和保护程序可以适配macOS和Windows。
+
 
 ### 运行方法
 
