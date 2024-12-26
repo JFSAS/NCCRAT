@@ -20,16 +20,15 @@
 
 * `client.py` :客户端程序，需要实现具体的客户端处理逻辑。
 
-* `rat_gui.py`:GUI 主程序，需要在其中实现各功能对应的界面逻辑，将占位的弹窗消息替换为您的功能代码。
+* `client_gui.py` :客户端GUI。
+
+* `main_gui.py`:GUI 主程序，需要在其中实现各功能对应的界面逻辑，将占位的弹窗消息替换为您的功能代码。
 
 * `Terminal.py`:等功能模块：例如，`Terminal.py` 实现了终端功能。您可以参考此文件，创建并实现您自己的功能模块。
 
 * `server.py`：服务器程序，维护了 Socket 的管理、消息收发等逻辑。通常无需修改，除非您需要更改数据传输结构。
-* `generate_client.py`：用于生成客户端。目前只包含基本框架，待完成 
 
-`client.py`
-
- 后可进一步完善。
+- `protect.py`: 保护程序，现有停止tcp功能。
 
 ## 通信逻辑 🌐
 
@@ -68,13 +67,20 @@ client.py
 3. **启动服务器**
 
    ```bash
-   python rat_gui.py
+   python server/main_gui.py
    ```
 
-4. **生成并启动客户端**
+4. **启动客户端**
 
-   - 使用 `generate_client.py` 生成客户端。
-   - 在目标主机上运行生成的客户端。
+   ```bash
+   python client/client_gui.py
+   ```
+
+5. **启动保护程序（optional）**
+
+   ```bash
+   python protect/protect.py
+   ```
 
 ## 贡献指南 🤝
 
