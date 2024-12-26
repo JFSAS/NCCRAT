@@ -5,4 +5,4 @@ Start-Process -FilePath "python" -ArgumentList "server/main_gui.py"
 Start-Sleep -Seconds 1
 
 # 运行 client.py
-Start-Process -FilePath "python" -ArgumentList "client/client.py"
+Start-Process -FilePath "python" -ArgumentList "client/client_gui.py"
