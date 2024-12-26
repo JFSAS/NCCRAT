@@ -142,16 +142,14 @@ class Protect:
                 remote_address = item.text(4)
                 local_port = item.text(3)           
                 remote_port =item.text(5)
-                local_na_flag = False
                 remote_na_flag = False
+                logging.debug(f"local address: {local_address}")
                 
-                if local_address == 'N/A':
-                    local_na_flag = True
                 if remote_address == 'N/A':
                     remote_na_flag = True
             
                 for conn in psutil.net_connections(kind='tcp'): # or 短路
-                    if local_na_flag or (conn.laddr.ip == local_address and conn.laddr.port == int(local_port)):
+                    if conn.laddr.ip == local_address and conn.laddr.port == int(local_port):
                         if remote_na_flag or (conn.raddr.ip == remote_address and conn.raddr.port == int(remote_port)):
                             logging.debug(f"Detected system: {os.name}")
                             commands = {
@@ -161,7 +159,7 @@ class Protect:
                             command = commands.get(os.name, None)
                             
                             if command:
-                                os.system(command)
+                                # os.system(command)
                                 logging.debug(
                                     f"Stopped TCP connection: {item.text(1)}")
                             
