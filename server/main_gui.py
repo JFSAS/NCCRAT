@@ -8,7 +8,6 @@ from tkinter import ttk, Menu, Toplevel, messagebox, scrolledtext
 from server import RAT_SERVER
 import threading
 import queue
-from modules.generate_client_demo import generate_client
 from modules.terminal import Terminal
 from modules.window import WindowManager
 from modules.keyboard import Keyboard
